@@ -1,0 +1,13 @@
+version: v1
+
+name: github.com/partyzanex/go-makefile
+
+lint:
+  use:
+    - DEFAULT
+  ignore:
+    - google
+
+breaking:
+  use:
+    - FILE

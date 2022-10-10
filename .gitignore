@@ -1,0 +1,6 @@
+.idea
+bin/
+proto/
+generated/
+buf.gen.yaml
+buf.yaml
