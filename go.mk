@@ -22,7 +22,7 @@ GOLANGCI_LINT_VERSION :=v1.50.0
 GOLANGCI_LINT_BIN :=$(LOCAL_BIN)/golangci-lint
 
 .PHONY: golangci-lint-install
-golangci-lint-install:
+golangci-lint-install: bin-default
 	@go-install -v -e github.com/golangci/golangci-lint/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION) $(GOLANGCI_LINT_BIN)
 
 .PHONY: lint-default
