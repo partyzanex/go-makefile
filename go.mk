@@ -2,6 +2,11 @@ ifndef LOCAL_BIN
 include main.mk
 endif
 
+main.mk:
+	@tmpdir=$$(mktemp -d) && \
+	git clone --depth 1 --single-branch https://github.com/partyzanex/go-makefile.git $$tmpdir && \
+	cp $$tmpdir/main.mk $(CURDIR)/main.mk
+
 GO_INSTALL_VERSION :=v0.2.0
 GO_INSTALL_URL :=github.com/partyzanex/go-admin-bootstrap/cmd/go-install
 
