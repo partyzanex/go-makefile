@@ -2,6 +2,11 @@ ifndef GO_INSTALL_VERSION
 include go.mk
 endif
 
+go.mk:
+	@tmpdir=$$(mktemp -d) && \
+	git clone --depth 1 --single-branch https://github.com/partyzanex/go-makefile.git $$tmpdir && \
+	cp $$tmpdir/go.mk $(CURDIR)/go.mk
+
 # versions
 PROTOC_GRPC_GATEWAY_VERSION=v2.10.3
 PROTOC_GEN_GO_VERSION=v1.28.0
@@ -40,8 +45,15 @@ BUF_BREAKING_BIN=$(LOCAL_BIN)/protoc-gen-buf-breaking
 # versions
 BUF_VERSION := v1.8.0
 
+.PHONY: buf.yaml
+buf.yaml:
+	@tmpdir=$$(mktemp -d) && \
+	git clone --depth 1 --single-branch https://github.com/partyzanex/go-makefile.git $$tmpdir && \
+	cp $$tmpdir/buf.template.yaml $(CURDIR)/buf.yaml && \
+	cp $$tmpdir/buf.gen.template.yaml $(CURDIR)/buf.gen.yaml
+
 .PHONY: buf-install
-buf-install: bin-default
+buf-install: bin-default buf.yaml
 	@go-install -v -e $(BUF_SOURCE_URL)@$(BUF_VERSION) $(BUF_BIN)
 	@go-install -v -e $(BUF_LINT_SOURCE_URL)@$(BUF_VERSION) $(BUF_LINT_BIN)
 	@go-install -v -e $(BUF_BREAKING_SOURCE_URL)@$(BUF_VERSION) $(BUF_BREAKING_BIN)
