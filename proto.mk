@@ -74,6 +74,11 @@ ifeq ($(shell uname -s), Linux)
 	# TODO: for linux
 	# curl -L https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTOC_VERSION)/protoc-$(PROTOC_VERSION)-$(shell uname -s | sed 's/Darwin/osx/')-$(shell uname -m).zip | bsdtar -xvf-
 endif
+	@mkdir -p $(PROTO_DIR)/google/api && \
+ 	for pf in annotations http; \
+	do \
+		curl -L -o $(PROTO_DIR)/google/api/$$pf.proto https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/$$pf.proto; \
+	done
 
 GENERATED_GO_PATH = $(CURDIR)/generated/go
 
