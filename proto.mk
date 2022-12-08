@@ -8,10 +8,10 @@ go.mk:
 	cp $$tmpdir/go.mk $(CURDIR)/go.mk
 
 # versions
-PROTOC_GRPC_GATEWAY_VERSION=v2.10.3
-PROTOC_GEN_GO_VERSION=v1.28.0
+PROTOC_GRPC_GATEWAY_VERSION=v2.14.0
+PROTOC_GEN_GO_VERSION=v1.28.1
 PROTOC_GEN_GO_GRPC_VERSION=v1.2.0
-PROTOC_VERSION := 21.1
+PROTOC_VERSION := 21.11
 # paths
 PROTOC_BIN=$(LOCAL_BIN)/protoc
 
@@ -71,8 +71,9 @@ ifeq ($(shell uname -s), Darwin)
 endif
 # for linux
 ifeq ($(shell uname -s), Linux)
-	# TODO: for linux
-	# curl -L https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTOC_VERSION)/protoc-$(PROTOC_VERSION)-$(shell uname -s | sed 's/Darwin/osx/')-$(shell uname -m).zip | bsdtar -xvf-
+	tmp=$$(mktemp -d) && zip=$$tmp/protoc.zip && echo "$$zip" && \
+	curl -L https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTOC_VERSION)/protoc-$(PROTOC_VERSION)-$(shell uname -s | sed 's/Darwin/osx/')-$(shell uname -m).zip -o $$zip && \
+	cd $$tmp && cat $$zip | bsdtar -xvf- && mkdir -p $(PROTO_DIR) && cp -R $$tmp/include/google $(PROTO_DIR)
 endif
 	@mkdir -p $(PROTO_DIR)/google/api && \
  	for pf in annotations http; \

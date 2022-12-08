@@ -18,12 +18,13 @@ go-install: bin-default
 test-default:
 	@go test -v -count=1 -race ./...
 
-GOLANGCI_LINT_VERSION :=v1.50.0
+GOLANGCI_LINT_VERSION :=v1.50.1
 GOLANGCI_LINT_BIN :=$(LOCAL_BIN)/golangci-lint
 
 .PHONY: golangci-lint-install
 golangci-lint-install: bin-default
-	@go-install -v -e github.com/golangci/golangci-lint/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION) $(GOLANGCI_LINT_BIN)
+	@go-install -v -e github.com/golangci/golangci-lint/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION) $(GOLANGCI_LINT_BIN) \
+	&& echo "$(GOLANGCI_LINT_BIN)@$(GOLANGCI_LINT_VERSION) installed."
 
 .PHONY: lint-default
 lint-default: golangci-lint-install
@@ -34,14 +35,16 @@ GOOSE_BIN=$(LOCAL_BIN)/goose
 
 .PHONY: goose-install
 goose-install:
-	@go-install -v -e github.com/pressly/goose/v3/cmd/goose@$(GOOSE_VERSION)
+	@go-install -v -e github.com/pressly/goose/v3/cmd/goose@$(GOOSE_VERSION) \
+	&& echo "$(GOOSE_BIN)@$(GOOSE_VERSION) installed."
 
 PG_WAIT_VERSION :=v0.1.3
 PG_WAIT_BIN=$(LOCAL_BIN)/pg-wait
 
 .PHONY: pg-wait-install
 pg-wait-install:
-	@go-install -v -e github.com/partyzanex/pg-wait/cmd/pg-wait@$(PG_WAIT_VERSION)
+	@go-install -v -e github.com/partyzanex/pg-wait/cmd/pg-wait@$(PG_WAIT_VERSION) \
+	&& echo "$(PG_WAIT_BIN)@$(PG_WAIT_VERSION) installed."
 
 .PHONY: pg-wait
 pg-wait: pg-wait-install
@@ -67,16 +70,18 @@ else
 	@echo "POSTGRES_DSN is undefined!"
 endif
 
-GRPCURL_VERSION := v1.7.0
+GRPCURL_VERSION := v1.8.7
 GRPCURL_BIN := $(LOCAL_BIN)/grpcurl
 
 .PHONY: grpcurl-install
 grpcurl-install:
-	@go-install -v -e github.com/fullstorydev/grpcurl/cmd/grpcurl@$(GRPCURL_VERSION) $(GRPCURL_BIN)
+	@go-install -v -e github.com/fullstorydev/grpcurl/cmd/grpcurl@$(GRPCURL_VERSION) $(GRPCURL_BIN) \
+	&& echo "$(GRPCURL_BIN)@$(GRPCURL_VERSION) installed."
 
 MOCKGEN_VERSION := v1.6.1
 MOCKGEN_BIN := $(LOCAL_BIN)/mockgen
 
 .PHONY: mockgen-install
 mockgen-install:
-	@go-install -v -e github.com/golang/mock/mockgen@$(MOCKGEN_VERSION) $(MOCKGEN_BIN)
+	@go-install -v -e github.com/golang/mock/mockgen@$(MOCKGEN_VERSION) $(MOCKGEN_BIN) \
+	&& echo "$(MOCKGEN_BIN)@$(MOCKGEN_VERSION) installed."
