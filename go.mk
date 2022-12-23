@@ -7,7 +7,7 @@ main.mk:
 	git clone --depth 1 --single-branch https://github.com/partyzanex/go-makefile.git $$tmpdir && \
 	cp $$tmpdir/main.mk $(CURDIR)/main.mk
 
-GO_INSTALL_VERSION :=v0.2.0
+GO_INSTALL_VERSION :=v0.2.1
 GO_INSTALL_URL :=github.com/partyzanex/go-admin-bootstrap/cmd/go-install
 
 .PHONY: go-install
@@ -30,7 +30,7 @@ golangci-lint-install: bin-default
 lint-default: golangci-lint-install
 	@$(GOLANGCI_LINT_BIN) run
 
-GOOSE_VERSION :=v3.6.1
+GOOSE_VERSION :=v3.7.0
 GOOSE_BIN=$(LOCAL_BIN)/goose
 
 .PHONY: goose-install
