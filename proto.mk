@@ -42,15 +42,21 @@ BUF_BREAKING_SOURCE_URL := github.com/bufbuild/buf/cmd/protoc-gen-buf-lint
 BUF_BIN=$(LOCAL_BIN)/buf
 BUF_LINT_BIN=$(LOCAL_BIN)/protoc-gen-buf-lint
 BUF_BREAKING_BIN=$(LOCAL_BIN)/protoc-gen-buf-breaking
+BUF_TEMPLATE_PATH=$(CURDIR)/buf.yaml
+BUF_GEN_TEMPLATE_PATH=$(CURDIR)/buf.gen.yaml
 # versions
 BUF_VERSION := v1.8.0
 
 .PHONY: buf.yaml
 buf.yaml:
-	@tmpdir=$$(mktemp -d) && \
+	@[ ! -f $(BUF_TEMPLATE_PATH) ] || exit 0 && \
+	tmpdir=$$(mktemp -d) && \
 	git clone --depth 1 --single-branch https://github.com/partyzanex/go-makefile.git $$tmpdir && \
-	cp $$tmpdir/buf.template.yaml $(CURDIR)/buf.yaml && \
-	cp $$tmpdir/buf.gen.template.yaml $(CURDIR)/buf.gen.yaml
+	cp $$tmpdir/buf.template.yaml $(BUF_TEMPLATE_PATH)
+	@[ ! -f $(BUF_GEN_TEMPLATE_PATH) ] || exit 0 && \
+	tmpdir=$$(mktemp -d) && \
+	git clone --depth 1 --single-branch https://github.com/partyzanex/go-makefile.git $$tmpdir && \
+	cp $$tmpdir/buf.gen.template.yaml $(BUF_GEN_TEMPLATE_PATH)
 
 .PHONY: buf-install
 buf-install: bin-default buf.yaml
