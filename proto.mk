@@ -87,7 +87,7 @@ endif
 		curl -L -o $(PROTO_DIR)/google/api/$$pf.proto https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/$$pf.proto; \
 	done
 
-GENERATED_GO_PATH = $(CURDIR)/generated/go
+GENERATED_GO_PATH ?= $(CURDIR)/generated/go
 
 .PHONY: proto-default
 proto-default: protoc-install buf-install proto-deps
