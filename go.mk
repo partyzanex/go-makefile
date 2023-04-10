@@ -85,3 +85,11 @@ MOCKGEN_BIN := $(LOCAL_BIN)/mockgen
 mockgen-install:
 	@go-install -v -e github.com/golang/mock/mockgen@$(MOCKGEN_VERSION) $(MOCKGEN_BIN) \
 	&& echo "$(MOCKGEN_BIN)@$(MOCKGEN_VERSION) installed."
+
+CLI_CONFIG_GEN_VERSION := v0.0.5
+CLI_CONFIG_GEN_BIN := $(LOCAL_BIN)/cli-config-gen
+
+.PHONY: cli-config-gen-install
+cli-config-gen-install:
+	@go-install -v -e github.com/partyzanex/cli-config-gen/cmd/cli-config-gen@$(CLI_CONFIG_GEN_VERSION) $(CLI_CONFIG_GEN_BIN) \
+	&& echo "$(CLI_CONFIG_GEN_BIN)@$(CLI_CONFIG_GEN_VERSION) installed."
