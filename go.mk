@@ -18,7 +18,7 @@ go-install: bin-default
 test-default:
 	@go test -v -count=1 -race ./...
 
-GOLANGCI_LINT_VERSION :=v1.50.1
+GOLANGCI_LINT_VERSION :=v1.52.2
 GOLANGCI_LINT_BIN :=$(LOCAL_BIN)/golangci-lint
 
 .PHONY: golangci-lint-install
