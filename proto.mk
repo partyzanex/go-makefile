@@ -68,6 +68,7 @@ PROTO_DIR := $(CURDIR)/proto
 
 .PHONY: proto-deps
 proto-deps:
+ifeq ($(wildcard $(PROTO_DIR)/google),)
 # for osx
 ifeq ($(shell uname -s), Darwin)
 	@tmp=$$(mktemp -d) && zip=$$tmp/protoc.zip && \
@@ -86,6 +87,7 @@ endif
 	do \
 		curl -L -o $(PROTO_DIR)/google/api/$$pf.proto https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/$$pf.proto; \
 	done
+endif
 
 GENERATED_GO_PATH ?= $(CURDIR)/generated/go
 
