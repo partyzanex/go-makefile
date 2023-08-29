@@ -93,3 +93,7 @@ CLI_CONFIG_GEN_BIN := $(LOCAL_BIN)/cli-config-gen
 cli-config-gen-install:
 	@go-install -v -e github.com/partyzanex/cli-config-gen/cmd/cli-config-gen@$(CLI_CONFIG_GEN_VERSION) $(CLI_CONFIG_GEN_BIN) \
 	&& echo "$(CLI_CONFIG_GEN_BIN)@$(CLI_CONFIG_GEN_VERSION) installed."
+
+.PHONY: mockgen
+mockgen: mockgen-install
+	PATH=$(CURDIR)/bin:${PATH} go generate ./...
