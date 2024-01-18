@@ -8,10 +8,10 @@ go.mk:
 	cp $$tmpdir/go.mk $(CURDIR)/go.mk
 
 # versions
-PROTOC_GRPC_GATEWAY_VERSION=v2.14.0
-PROTOC_GEN_GO_VERSION=v1.28.1
-PROTOC_GEN_GO_GRPC_VERSION=v1.2.0
-PROTOC_VERSION := 21.11
+PROTOC_GRPC_GATEWAY_VERSION=v2.19.0
+PROTOC_GEN_GO_VERSION=v1.32.0
+PROTOC_GEN_GO_GRPC_VERSION=v1.3.0
+PROTOC_VERSION := 25.2
 # paths
 PROTOC_BIN=$(LOCAL_BIN)/protoc
 
@@ -26,6 +26,11 @@ ifeq ($(shell uname -s), Darwin)
 endif
 ifeq ($(shell uname -s), Linux)
 	curl -L https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTOC_VERSION)/protoc-$(PROTOC_VERSION)-$(shell uname -s | sed 's/Darwin/osx/')-$(shell uname -m).zip | bsdtar -xvf- bin
+endif
+ifeq ($(OS),Windows_NT)
+	tmp=$$(mktemp -d) && zip=$$tmp/protoc.zip && \
+	curl -k -L https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTOC_VERSION)/protoc-$(PROTOC_VERSION)-win64.zip -o $$zip && \
+	unzip $$zip -d $$tmp &> /dev/null && ls $$tmp && cp $$tmp/bin/protoc.exe $(PROTOC_BIN)
 endif
 	@chmod +x $(PROTOC_BIN) && echo "protoc installed!"
 endif

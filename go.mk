@@ -7,7 +7,7 @@ main.mk:
 	git clone --depth 1 --single-branch https://github.com/partyzanex/go-makefile.git $$tmpdir && \
 	cp $$tmpdir/main.mk $(CURDIR)/main.mk
 
-GO_INSTALL_VERSION :=v0.2.1
+GO_INSTALL_VERSION :=v0.3.2
 GO_INSTALL_URL :=github.com/partyzanex/go-admin-bootstrap/cmd/go-install
 
 .PHONY: go-install
@@ -18,7 +18,7 @@ go-install: bin-default
 test-default:
 	@go test -v -count=1 -race ./...
 
-GOLANGCI_LINT_VERSION :=v1.52.2
+GOLANGCI_LINT_VERSION :=v1.55.2
 GOLANGCI_LINT_BIN :=$(LOCAL_BIN)/golangci-lint
 
 .PHONY: golangci-lint-install
@@ -30,7 +30,7 @@ golangci-lint-install: bin-default
 lint-default: golangci-lint-install
 	@$(GOLANGCI_LINT_BIN) run
 
-GOOSE_VERSION :=v3.7.0
+GOOSE_VERSION :=v3.17.0
 GOOSE_BIN=$(LOCAL_BIN)/goose
 
 .PHONY: goose-install
@@ -70,7 +70,7 @@ else
 	@echo "POSTGRES_DSN is undefined!"
 endif
 
-GRPCURL_VERSION := v1.8.7
+GRPCURL_VERSION := v1.8.9
 GRPCURL_BIN := $(LOCAL_BIN)/grpcurl
 
 .PHONY: grpcurl-install
@@ -78,7 +78,7 @@ grpcurl-install:
 	@go-install -v -e github.com/fullstorydev/grpcurl/cmd/grpcurl@$(GRPCURL_VERSION) $(GRPCURL_BIN) \
 	&& echo "$(GRPCURL_BIN)@$(GRPCURL_VERSION) installed."
 
-MOCKGEN_VERSION := v1.6.1
+MOCKGEN_VERSION := v1.6.0
 MOCKGEN_BIN := $(LOCAL_BIN)/mockgen
 
 .PHONY: mockgen-install
