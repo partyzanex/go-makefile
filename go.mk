@@ -94,6 +94,25 @@ cli-config-gen-install:
 	@go-install -v -e github.com/partyzanex/cli-config-gen/cmd/cli-config-gen@$(CLI_CONFIG_GEN_VERSION) $(CLI_CONFIG_GEN_BIN) \
 	&& echo "$(CLI_CONFIG_GEN_BIN)@$(CLI_CONFIG_GEN_VERSION) installed."
 
-.PHONY: mockgen
-mockgen: mockgen-install
+.PHONY: gen-default
+gen-default: mockgen-install
 	PATH=$(CURDIR)/bin:${PATH} go generate ./...
+
+.PHONY: mockgen-default
+mockgen-default: gen
+
+EXCLUDE_BUILD=""
+
+.PHONY: build-default
+build-default: gen
+	@APP_VERSION=$$(git rev-parse --short HEAD) && \
+	for dir in $(CURDIR)/cmd/*/; do \
+		APP_NAME=$$(basename $$dir) && \
+		if [ -z "$$EXCLUDE_BUILD" ] || ! echo "$$EXCLUDE_BUILD" | grep -wq "$$APP_NAME"; then \
+			echo "build $$APP_NAME@$$APP_VERSION" && \
+			rm -f $(LOCAL_BIN)/$$APP_NAME && \
+			go build -o $(LOCAL_BIN)/$$APP_NAME $(CURDIR)/cmd/$$APP_NAME; \
+		else \
+			echo "skipping $$APP_NAME"; \
+		fi; \
+	done
