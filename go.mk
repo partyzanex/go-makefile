@@ -1,51 +1,76 @@
+# Conditionally include main.mk if LOCAL_BIN is not defined
 ifndef LOCAL_BIN
 include main.mk
 endif
 
+# main.mk download and setup block
 main.mk:
 	@tmpdir=$$(mktemp -d) && \
 	git clone --depth 1 --single-branch https://github.com/partyzanex/go-makefile.git $$tmpdir && \
 	cp $$tmpdir/main.mk $(CURDIR)/main.mk
 
-GO_INSTALL_VERSION :=v0.3.2
-GO_INSTALL_URL :=github.com/partyzanex/go-admin-bootstrap/cmd/go-install
+# Define default versions for various tools
+GOLANGCI_LINT_VERSION := latest
+GOOSE_VERSION := latest
+PG_WAIT_VERSION := latest
+GRPCURL_VERSION := latest
+MOCKGEN_VERSION := latest
+CLI_CONFIG_GEN_VERSION := latest
+OGEN_VERSION := latest
 
-.PHONY: go-install
-go-install: bin-default
-	@go install $(GO_INSTALL_URL)@$(GO_INSTALL_VERSION)
+# Collect all version variables into one variable for easy management
+VERSIONS := GOLANGCI_LINT_VERSION GOOSE_VERSION PG_WAIT_VERSION GRPCURL_VERSION MOCKGEN_VERSION CLI_CONFIG_GEN_VERSION OGEN_VERSION
 
+# Check for version override provided via command line
+ifneq (,$(findstring v,$(MAKECMDGOALS)))
+    # Extract the specified version
+    NEW_VERSION := $(filter v%,$(MAKECMDGOALS))
+    # Set all version variables to the new version if provided
+    ifneq (,$(NEW_VERSION))
+        $(foreach var,$(VERSIONS),$(eval $(var) := $(NEW_VERSION)))
+    endif
+endif
+
+# Create a pattern rule for version goals that do nothing but allow the make to succeed
+v%:
+	@true
+
+# Define binaries' paths
+GOLANGCI_LINT_BIN :=$(LOCAL_BIN)/golangci-lint
+GOOSE_BIN :=$(LOCAL_BIN)/goose
+PG_WAIT_BIN :=$(LOCAL_BIN)/pg-wait
+GRPCURL_BIN :=$(LOCAL_BIN)/grpcurl
+MOCKGEN_BIN :=$(LOCAL_BIN)/mockgen
+CLI_CONFIG_GEN_BIN :=$(LOCAL_BIN)/cli-config-gen
+OGEN_BIN :=$(LOCAL_BIN)/ogen
+
+# Default test target
 .PHONY: test-default
 test-default:
 	@go test -v -count=1 -race ./...
 
-GOLANGCI_LINT_VERSION :=v1.55.2
-GOLANGCI_LINT_BIN :=$(LOCAL_BIN)/golangci-lint
-
+# Target to install golangci-lint
 .PHONY: golangci-lint-install
-golangci-lint-install: bin-default
-	@go-install -v -e github.com/golangci/golangci-lint/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION) $(GOLANGCI_LINT_BIN) \
-	&& echo "$(GOLANGCI_LINT_BIN)@$(GOLANGCI_LINT_VERSION) installed."
+golangci-lint-install:
+	$(call go_build_install,github.com/golangci/golangci-lint/cmd/golangci-lint,$(GOLANGCI_LINT_VERSION),$(GOLANGCI_LINT_BIN))
 
+# Target to run linting
 .PHONY: lint-default
 lint-default: golangci-lint-install
 	@$(GOLANGCI_LINT_BIN) run
 
-GOOSE_VERSION :=v3.17.0
-GOOSE_BIN=$(LOCAL_BIN)/goose
-
+# Target to install goose
 .PHONY: goose-install
 goose-install:
-	@go-install -v -e github.com/pressly/goose/v3/cmd/goose@$(GOOSE_VERSION) \
-	&& echo "$(GOOSE_BIN)@$(GOOSE_VERSION) installed."
+	$(call go_build_install,github.com/pressly/goose/v3/cmd/goose,$(GOOSE_VERSION),$(GOOSE_BIN))
 
-PG_WAIT_VERSION :=v0.1.3
-PG_WAIT_BIN=$(LOCAL_BIN)/pg-wait
-
+# Target to install pg-wait
 .PHONY: pg-wait-install
 pg-wait-install:
 	@go-install -v -e github.com/partyzanex/pg-wait/cmd/pg-wait@$(PG_WAIT_VERSION) \
 	&& echo "$(PG_WAIT_BIN)@$(PG_WAIT_VERSION) installed."
 
+# Target to wait for PostgreSQL readiness
 .PHONY: pg-wait
 pg-wait: pg-wait-install
 ifdef POSTGRES_DSN
@@ -54,6 +79,7 @@ else
 	@echo "POSTGRES_DSN is undefined!"
 endif
 
+# Targets to run goose migrations up and down
 .PHONY: goose-up
 goose-up: goose-install
 ifdef POSTGRES_DSN
@@ -70,49 +96,89 @@ else
 	@echo "POSTGRES_DSN is undefined!"
 endif
 
-GRPCURL_VERSION := v1.8.9
-GRPCURL_BIN := $(LOCAL_BIN)/grpcurl
-
+# Target to install grpcurl
 .PHONY: grpcurl-install
 grpcurl-install:
-	@go-install -v -e github.com/fullstorydev/grpcurl/cmd/grpcurl@$(GRPCURL_VERSION) $(GRPCURL_BIN) \
-	&& echo "$(GRPCURL_BIN)@$(GRPCURL_VERSION) installed."
+	$(call go_build_install,github.com/fullstorydev/grpcurl/cmd/grpcurl,$(GRPCURL_VERSION),$(GRPCURL_BIN))
 
-MOCKGEN_VERSION := v1.6.0
-MOCKGEN_BIN := $(LOCAL_BIN)/mockgen
-
+# Target to install mockgen
 .PHONY: mockgen-install
 mockgen-install:
-	@go-install -v -e github.com/golang/mock/mockgen@$(MOCKGEN_VERSION) $(MOCKGEN_BIN) \
-	&& echo "$(MOCKGEN_BIN)@$(MOCKGEN_VERSION) installed."
+	$(call go_build_install,github.com/golang/mock/mockgen,$(MOCKGEN_VERSION),$(MOCKGEN_BIN))
 
-CLI_CONFIG_GEN_VERSION := v0.0.5
-CLI_CONFIG_GEN_BIN := $(LOCAL_BIN)/cli-config-gen
-
+# Target to install cli-config-gen
 .PHONY: cli-config-gen-install
 cli-config-gen-install:
-	@go-install -v -e github.com/partyzanex/cli-config-gen/cmd/cli-config-gen@$(CLI_CONFIG_GEN_VERSION) $(CLI_CONFIG_GEN_BIN) \
-	&& echo "$(CLI_CONFIG_GEN_BIN)@$(CLI_CONFIG_GEN_VERSION) installed."
+	$(call go_build_install,github.com/partyzanex/cli-config-gen/cmd/cli-config-gen,$(CLI_CONFIG_GEN_VERSION),$(CLI_CONFIG_GEN_BIN))
 
+# Target to install ogen
+.PHONY: ogen-install
+ogen-install:
+	$(call go_build_install,github.com/ogen-go/ogen,$(OGEN_VERSION),$(OGEN_BIN))
+
+# Target for default code generation
 .PHONY: gen-default
 gen-default: mockgen-install
-	PATH=$(CURDIR)/bin:${PATH} go generate ./...
+	@PATH=$(CURDIR)/bin:${PATH} go generate ./...
 
+# Alias for code generation
 .PHONY: mockgen-default
 mockgen-default: gen
 
-EXCLUDE_BUILD=""
+# Define default build and clean targets
+.PHONY: build-default clean
 
-.PHONY: build-default
+# Define build directory, command directory, and build exclusions
+BUILD_DIR := $(CURDIR)/bin
+CMD_DIR := $(CURDIR)/cmd
+EXCLUDE_BUILD ?= ""
+
+# Target to build applications
 build-default: gen
 	@APP_VERSION=$$(git rev-parse --short HEAD) && \
-	for dir in $(CURDIR)/cmd/*/; do \
+	for dir in $(CMD_DIR)/*/; do \
 		APP_NAME=$$(basename $$dir) && \
-		if [ -z "$$EXCLUDE_BUILD" ] || ! echo "$$EXCLUDE_BUILD" | grep -wq "$$APP_NAME"; then \
-			echo "build $$APP_NAME@$$APP_VERSION" && \
-			rm -f $(LOCAL_BIN)/$$APP_NAME && \
-			go build -o $(LOCAL_BIN)/$$APP_NAME $(CURDIR)/cmd/$$APP_NAME; \
+		if [ -z "$(EXCLUDE_BUILD)" ] || ! echo "$(EXCLUDE_BUILD)" | grep -wq "$$APP_NAME"; then \
+			echo "\033[0;36mBuilding $$APP_NAME@$$APP_VERSION\033[0m" && \
+			rm -f $(BUILD_DIR)/$$APP_NAME && \
+			go build -o $(BUILD_DIR)/$$APP_NAME $$dir; \
 		else \
-			echo "skipping $$APP_NAME"; \
+			echo "\033[0;33mSkipping $$APP_NAME\033[0m"; \
 		fi; \
 	done
+
+# Target to clean build artifacts
+clean:
+	@echo "\033[0;31mCleaning up...\033[0m" && \
+	rm -f $(BUILD_DIR)/*
+
+# Function definition for building and installing binaries with version control.
+define go_build_install
+	@command -v go >/dev/null 2>&1 || { echo "\033[0;31mERROR: Go runtime is not installed.\033[0m"; exit 1; }
+	@command -v mktemp >/dev/null 2>&1 || { echo "\033[0;31mERROR: Unable to find mktemp tool.\033[0m"; exit 1; }
+	@module_path=$(1); \
+	binary_path=$(3); \
+	build_flags=$(4); \
+	version=$(2); \
+	if [ -z "$$version" ]; then \
+		version=latest; \
+	fi; \
+	if [ -f $$binary_path@$$version ]; then \
+		echo "\033[0;33mSKIP: Binary $$binary_path@$$version already installed.\033[0m"; \
+		exit 0; \
+	fi; \
+	echo "\033[0;36mSTART: Installing $$module_path@$$version to $$binary_path.\033[0m"; \
+	{ \
+		set -e; \
+		tmp_dir=$$(mktemp -d); \
+		trap 'rm -rf "$$tmp_dir"' EXIT; \
+		cd $$tmp_dir; \
+		echo "\033[0;34mBUILD: Setting up build environment.\033[0m"; \
+		go mod init temp; \
+		go get -d $$module_path@$$version; \
+		go build $$build_flags -o $$binary_path@$$version $$module_path; \
+		ln -sf $$binary_path@$$version $$binary_path; \
+		echo "\033[0;32mCOMPLETE: $$binary_path is now linked to $$binary_path@$$version.\033[0m"; \
+		echo "\033[0;35m==========================================\033[0m"; \
+	}
+endef
