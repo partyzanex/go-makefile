@@ -152,7 +152,15 @@ clean:
 	@echo "\033[0;31mCleaning up...\033[0m" && \
 	rm -f $(BUILD_DIR)/*
 
-# Function definition for building and installing binaries with version control.
+# go_build_install installs a binary from a Golang module with version control.
+# Parameters:
+# 1 - Module URI for building
+# 2 - Module version (semver format or 'latest'), default 'latest'
+# 3 - Full path to install the binary
+# 4 - Build flags (optional)
+# This function manages multiple versions for different services, using isolated builds in a temporary directory.
+# Example of usage:
+#   $(call go_build_install,github.com/example/module,latest,/usr/local/bin/module_binary,-tags=prod)
 define go_build_install
 	@command -v go >/dev/null 2>&1 || { echo "\033[0;31mERROR: Go runtime is not installed.\033[0m"; exit 1; }
 	@command -v mktemp >/dev/null 2>&1 || { echo "\033[0;31mERROR: Unable to find mktemp tool.\033[0m"; exit 1; }
