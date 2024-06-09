@@ -2,5 +2,6 @@
 bin/
 proto/
 generated/
+pkg/
 buf.gen.yaml
 buf.yaml
