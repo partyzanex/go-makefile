@@ -190,3 +190,9 @@ define go_build_install
 		echo "\033[0;35m==========================================\033[0m"; \
 	}
 endef
+
+# Define .golangci.yml template for linting with golangci-lint
+.golangci.yml:
+	@tmpdir=$$(mktemp -d) && \
+	git clone --depth 1 --single-branch https://github.com/partyzanex/go-makefile.git $$tmpdir && \
+	cp $$tmpdir/template.golangci.yml $(CURDIR)/.golangci.yml
