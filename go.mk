@@ -114,7 +114,7 @@ cli-config-gen-install:
 # Target to install ogen
 .PHONY: ogen-install
 ogen-install:
-	$(call go_build_install,github.com/ogen-go/ogen,$(OGEN_VERSION),$(OGEN_BIN))
+	$(call go_build_install,github.com/ogen-go/ogen/cmd/ogen,$(OGEN_VERSION),$(OGEN_BIN))
 
 # Target for default code generation
 .PHONY: gen-default
