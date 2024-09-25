@@ -183,7 +183,7 @@ define go_build_install
 		cd $$tmp_dir; \
 		echo "\033[0;34mBUILD: Setting up build environment.\033[0m"; \
 		go mod init temp; \
-		go get -d $$module_path@$$version; \
+		go get $$module_path@$$version; \
 		go build $$build_flags -o $$binary_path@$$version $$module_path; \
 		ln -sf $$binary_path@$$version $$binary_path; \
 		echo "\033[0;32mCOMPLETE: $$binary_path is now linked to $$binary_path@$$version.\033[0m"; \
