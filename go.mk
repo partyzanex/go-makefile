@@ -96,6 +96,18 @@ else
 	@echo "POSTGRES_DSN is undefined!"
 endif
 
+# Define migrations path
+MIGRATIONS_PATH := $(CURDIR)/migrations
+
+# Target to create a new goose migration
+.PHONY: goose-migration
+goose-migration: goose-install
+ifeq ($(wildcard $(MIGRATIONS_PATH)),)
+	@mkdir -p $(MIGRATIONS_PATH)
+endif
+	@read -p "Enter migration name: " migration_name; \
+	$(GOOSE_BIN) -dir $(MIGRATIONS_PATH) create $$migration_name sql
+
 # Target to install grpcurl
 .PHONY: grpcurl-install
 grpcurl-install:
