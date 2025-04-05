@@ -83,6 +83,8 @@ endif
 endif
 
 GENERATED_GO_PATH ?= $(CURDIR)/pkg/proto
+EXCLUDE_DIRS ?= google
+GO_VERSION ?= 1.24
 
 .PHONY: proto-default
 proto-default: protoc-install proto-deps
@@ -99,8 +101,14 @@ proto-default: protoc-install proto-deps
 		$$(find $(PROTO_DIR) -not \( -path $(PROTO_DIR)/google -prune \) -iname "*.proto")
 	rm -rf $(GENERATED_GO_PATH)/google
 	@for dir in $(GENERATED_GO_PATH)/*/; do \
-	  cd $$dir && \
-	  go mod init && go mod tidy && go mod vendor; \
+	  exclude=$$(basename $$dir); \
+	  if [ -z "$(EXCLUDE_DIRS)" ] || ! echo "$(EXCLUDE_DIRS)" | grep -wq "$$exclude"; then \
+	    echo "\033[0;36mgo mod init for $$exclude\033[0m"; \
+	    cd $$dir && \
+	  	go mod init && go mod tidy -go=$(GO_VERSION) && go mod vendor; \
+	  else \
+	    echo "\033[0;33mSkipping $$exclude\033[0m"; \
+	  fi; \
 	done
 
 .PHONY: proto-lint
