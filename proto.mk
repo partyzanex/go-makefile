@@ -12,6 +12,7 @@ PROTOC_GRPC_GATEWAY_VERSION := latest
 PROTOC_GEN_GO_VERSION := latest
 PROTOC_GEN_GO_GRPC_VERSION := latest
 PROTOC_VERSION := 27.1
+PROTOLINT_VERSION := latest
 
 # paths
 PROTOC_GRPC_GATEWAY_BIN=$(LOCAL_BIN)/protoc-gen-grpc-gateway
@@ -19,8 +20,13 @@ PROTOC_GEN_OPENAPIV2_BIN=$(LOCAL_BIN)/protoc-gen-openapiv2
 PROTOC_GEN_GO_GRPC_BIN=$(LOCAL_BIN)/protoc-gen-go-grpc
 PROTOC_GEN_GO_BIN=$(LOCAL_BIN)/protoc-gen-go
 PROTOC_BIN=$(LOCAL_BIN)/protoc
+PROTOLINT_BIN := $(LOCAL_BIN)/protolint
 
-.PHONY: protoc-install protoc-grpc-gateway-install protoc-gen-openapiv2-install protoc-gen-go-grpc-install protoc-gen-go-install
+.PHONY: protoc-install protoc-grpc-gateway-install protoc-gen-openapiv2-install protoc-gen-go-grpc-install protoc-gen-go-install protolint-install
+
+.PHONY: protolint-install
+protolint-install: bin
+	$(call go_build_install,github.com/yoheimuta/protolint/cmd/protolint,$(PROTOLINT_VERSION),$(PROTOLINT_BIN))
 
 protoc-grpc-gateway-install: bin
 	$(call go_build_install,github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway,$(PROTOC_GRPC_GATEWAY_VERSION),$(PROTOC_GRPC_GATEWAY_BIN))
@@ -97,3 +103,12 @@ proto-default: protoc-install proto-deps
 	  go mod init && go mod tidy && go mod vendor; \
 	done
 
+.PHONY: proto-lint
+proto-lint: protolint-install
+	@$(PROTOLINT_BIN) lint --config_path=$(CURDIR)/.protolint.yml $(PROTO_DIR) && \
+	echo "lint done!"
+
+.protolint.yml:
+	@tmpdir=$$(mktemp -d) && \
+	git clone --depth 1 --single-branch https://github.com/partyzanex/go-makefile.git $$tmpdir && \
+	cp $$tmpdir/template.protolint.yml $(CURDIR)/.protolint.yml
