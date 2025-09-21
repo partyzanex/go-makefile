@@ -52,7 +52,7 @@ test-default:
 # Target to install golangci-lint
 .PHONY: golangci-lint-install
 golangci-lint-install:
-	$(call go_build_install,github.com/golangci/golangci-lint/cmd/golangci-lint,$(GOLANGCI_LINT_VERSION),$(GOLANGCI_LINT_BIN))
+	$(call go_build_install,github.com/golangci/golangci-lint/v2/cmd/golangci-lint,$(GOLANGCI_LINT_VERSION),$(GOLANGCI_LINT_BIN))
 
 # Target to run linting
 .PHONY: lint-default
@@ -207,4 +207,4 @@ endef
 .golangci.yml:
 	@tmpdir=$$(mktemp -d) && \
 	git clone --depth 1 --single-branch https://github.com/partyzanex/go-makefile.git $$tmpdir && \
-	cp $$tmpdir/template.golangci.yml $(CURDIR)/.golangci.yml
+	cp $$tmpdir/template.golangci.v2.yml $(CURDIR)/.golangci.yml
