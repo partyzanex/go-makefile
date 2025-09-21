@@ -170,10 +170,20 @@ linters:
     rules:
       # v1 issues.exclude mapped to text-based rules
       - text: "Function 'Run' has too many statements"
+        linters:
+          - funlen
       - text: "Function 'Run' is too long"
+        linters:
+          - funlen
       - text: "cyclomatic complexity [0-9]+ of func `Run` is high"
+        linters:
+          - gocyclo
       - text: "exported (method|function|type|const|var) (.+) should have comment"
+        linters:
+          - revive
       - text: "comment on exported (method|function|type|const|var) (.+) should be of the form"
+        linters:
+          - revive
 
       # v1 issues.exclude-rules mapped 1:1
       - linters:
@@ -225,4 +235,3 @@ formatters:
   settings:
     gofmt:
       simplify: true
-
