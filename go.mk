@@ -44,10 +44,12 @@ MOCKGEN_BIN :=$(LOCAL_BIN)/mockgen
 CLI_CONFIG_GEN_BIN :=$(LOCAL_BIN)/cli-config-gen
 OGEN_BIN :=$(LOCAL_BIN)/ogen
 
+CGO_ENABLED := 0
+
 # Default test target
 .PHONY: test-default
 test-default:
-	@go test -v -count=1 -race ./...
+	@CGO_ENABLED=$(CGO_ENABLED) go test -v -count=1 -race ./...
 
 # Target to install golangci-lint
 .PHONY: golangci-lint-install
