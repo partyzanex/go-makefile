@@ -69,8 +69,7 @@ goose-install:
 # Target to install pg-wait
 .PHONY: pg-wait-install
 pg-wait-install:
-	@go-install -v -e github.com/partyzanex/pg-wait/cmd/pg-wait@$(PG_WAIT_VERSION) \
-	&& echo "$(PG_WAIT_BIN)@$(PG_WAIT_VERSION) installed."
+	$(call go_build_install,github.com/partyzanex/pg-wait/cmd/pg-wait,$(PG_WAIT_VERSION),$(PG_WAIT_BIN))
 
 # Target to wait for PostgreSQL readiness
 .PHONY: pg-wait
