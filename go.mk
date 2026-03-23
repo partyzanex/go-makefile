@@ -144,7 +144,7 @@ mockgen-default: gen
 # Define build directory, command directory, and build exclusions
 BUILD_DIR := $(CURDIR)/bin
 CMD_DIR := $(CURDIR)/cmd
-EXCLUDE_BUILD ?= ""
+EXCLUDE_BUILD ?=
 
 # Target to build applications
 build-default: gen
@@ -184,10 +184,10 @@ define go_build_install
 	if [ -z "$$version" ]; then \
 		version=latest; \
 	fi; \
-	if [ -f $$binary_path@$$version ]; then \
-		if [ ! -e $$binary_path ] || [ ! -f $$binary_path ]; then \
+	if [ -f "$$binary_path@$$version" ]; then \
+		if [ ! -e "$$binary_path" ] || [ ! -f "$$binary_path" ]; then \
 			echo "\033[0;33mFIX: Broken symlink detected, relinking $$binary_path -> $$binary_path@$$version.\033[0m"; \
-			ln -sf $$binary_path@$$version $$binary_path; \
+			ln -sf "$$binary_path@$$version" "$$binary_path"; \
 		else \
 			echo "\033[0;33mSKIP: Binary $$binary_path@$$version already installed.\033[0m"; \
 		fi; \
@@ -198,12 +198,12 @@ define go_build_install
 		set -e; \
 		tmp_dir=$$(mktemp -d); \
 		trap 'rm -rf "$$tmp_dir"' EXIT; \
-		cd $$tmp_dir; \
+		cd "$$tmp_dir"; \
 		echo "\033[0;34mBUILD: Setting up build environment.\033[0m"; \
 		go mod init temp; \
-		go get $$module_path@$$version; \
-		go build $$build_flags -o $$binary_path@$$version $$module_path; \
-		ln -sf $$binary_path@$$version $$binary_path; \
+		go get "$$module_path@$$version"; \
+		go build $$build_flags -o "$$binary_path@$$version" "$$module_path"; \
+		ln -sf "$$binary_path@$$version" "$$binary_path"; \
 		echo "\033[0;32mCOMPLETE: $$binary_path is now linked to $$binary_path@$$version.\033[0m"; \
 		echo "\033[0;35m==========================================\033[0m"; \
 	}

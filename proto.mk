@@ -1,4 +1,4 @@
-ifndef GOLANGCI_LINT_VERSION
+ifndef LOCAL_BIN
 include go.mk
 endif
 
@@ -105,7 +105,7 @@ proto-default: protoc-install proto-deps
 	  if [ -z "$(EXCLUDE_DIRS)" ] || ! echo "$(EXCLUDE_DIRS)" | grep -wq "$$exclude"; then \
 	    echo "\033[0;36mgo mod init for $$exclude\033[0m"; \
 	    cd $$dir && \
-	  	go mod init && go mod tidy -go=$(GO_VERSION) && go mod vendor; \
+	  	go mod init $$exclude && go mod tidy -go=$(GO_VERSION) && go mod vendor; \
 	  else \
 	    echo "\033[0;33mSkipping $$exclude\033[0m"; \
 	  fi; \
