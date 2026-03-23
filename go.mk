@@ -185,7 +185,12 @@ define go_build_install
 		version=latest; \
 	fi; \
 	if [ -f $$binary_path@$$version ]; then \
-		echo "\033[0;33mSKIP: Binary $$binary_path@$$version already installed.\033[0m"; \
+		if [ ! -e $$binary_path ] || [ ! -f $$binary_path ]; then \
+			echo "\033[0;33mFIX: Broken symlink detected, relinking $$binary_path -> $$binary_path@$$version.\033[0m"; \
+			ln -sf $$binary_path@$$version $$binary_path; \
+		else \
+			echo "\033[0;33mSKIP: Binary $$binary_path@$$version already installed.\033[0m"; \
+		fi; \
 		exit 0; \
 	fi; \
 	echo "\033[0;36mSTART: Installing $$module_path@$$version to $$binary_path.\033[0m"; \

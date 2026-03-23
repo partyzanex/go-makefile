@@ -1,6 +1,7 @@
 .idea/
 bin/
 vendor/
+.gocache/
 *.mk
 *.out
 *.test
